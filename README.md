@@ -1,0 +1,2 @@
+# TwitchMagieBot
+Bot para twitch
