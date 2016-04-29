@@ -1,9 +1,10 @@
 ;===============================
-;            GLOBALS
+;            VARIABLES
 ;By Griever0x for twitch channel
 ;===============================
-set %seen_users.1 = $null
-set %main_channel = #griever0x
+%param_len 0
+%main_channel #griever0x
+%seen_users.1 moobot
 
 ;===============================
 ;            ALIAS
@@ -11,10 +12,10 @@ set %main_channel = #griever0x
 ;===============================
 
 ; User has seen
-alias uhs {
+/uhs {
   var %index = 1
   while ($index <= $len(%seen_users)) {
-    if ($2 == %seen_users. [ $+ [ $index ] ]) { 
+    if ($2 == %seen_users. [ $+ [ $index ] ]) {
       return 1
     }
     inc %index
@@ -22,52 +23,42 @@ alias uhs {
   return 0
 }
 
-alias cmds {
-  msg %main_channel !hola - Comando para saludo
-  msg %main_channel !slap nickname - Comando para darle una cachetada a alguien
-  msg %main_channel !die - Comando para matar a todos en el canal
-  msg %main_channel !twitter - Comando para decirte mi twitter
-  msg %main_channel !facebook - Comando para decirte mi facebook
-  msg %main_channel ##### Exclusivos para League of Legends ########
-  msg %main_channel !loladd - Comando para guardar tu nombre de invocador y podamos agregarte para jugar contigo
+/cmds {
+  /msg %main_channel !hola !slap !die !twitter !facebook !loladd
 }
 
-alias lol{
-  msg %main_channel Para poder jugar con nosotros solo debes dejar tu nombre de invocador
-  msg %main_channel usando el comando !loladd nombre_de_invocador
-  msg %main_channel te estare agregando en la brevedad
-}
+/lol {
+  /msg %main_channel Para poder jugar con nosotros solo debes dejar tu nombre de invocador usando el comando !loladd nombre_de_invocador. ej. !loladd griever0x
+
 
 ;===============================
-;            REMOTES
 ;By Griever0x for twitch channel
 ;===============================
 
-; Comandos de redes sociales
+# Comandos de redes sociales
 on 1:TEXT:*!twitter*:#:/msg $chan Hey $nick mi twitter es @Griever0x
 on 1:TEXT:*!facebook*:#:/msg $chan Hey $nick mi facebook es https://www.facebook.com/griever0x
-on 1:TEXT:*!kyo*:#:/msg $chan no olvides visitar nuestro canal amigo http://www.twitch.tv/kyoykimi
 
-; Comandos sociales
-on 1:TEXT:*!hi*:#:/msg $chan Un $nick salvaje ha aparecido en el directo !!
-on 1:TEXT:*!die*:#:/msg $chan $nick usa embolia cerebral y mata a todos
+# Comandos sociales
+on 1:TEXT:*!hola*:#:/msg $chan Un $nick salvaje ha aparecido en el directo !!
 on 1:TEXT:*!slap*:#:{
   if ($2!=$null) {
     if ($2 ison #griever0x) {
       .msg $chan $nick le da una cachetada a $2
-    } else {
+      return 0
+      } else {
       .msg $chan ese usuario no esta en el canal
       return 0
     }
-  } else {
+    } else {
     .msg $chan !slap funciona cuando especificas el nick de otro usuario
   }
 }
+on 1:TEXT:*!die*:#:/msg $chan $nick usa embolia cerebral y mata a todos
 
-; Comandos de chistes
-on 1:TEXT:*!chiste*:#:/msg $chan $read(chistes.txt)
+# Comandos de chistes
+# on 1:TEXT:*!chiste*:#:/msg $chan $read(chistes.txt)
 
-; Saludos al entrar al canal
 on 1:JOIN:#griever0x:{
   if ($ush($nick) != 1) {
     %seen_users. [ $+ [$len(%seen_users) + 1] ] = $nick
@@ -79,7 +70,7 @@ on 1:JOIN:#griever0x:{
 on 1:TEXT:*!commandlist*:#:{
   .cmds
 }
-on 1:TEXT:*!lol*:#:{
+on 1:TEXT:*!lolinfo*:#:{
   .lol
 }
 
@@ -88,7 +79,5 @@ on 1:TEXT:*!loladd*:#:{
   if ($2!=$null) {
     .msg $chan $nick Tu nombre de invocador se guardo correctamente.
     /write lol_add_accounts.txt $2
-  } else {
-    .msgn $chan $nick debes agregar tu nombre de invocador al comando ej. !lol Griever0x
   }
 }
